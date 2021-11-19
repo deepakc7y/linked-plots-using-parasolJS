@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="umbrella-favicon.png">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Parasol-JS | Visualization Tool</title>
+</head>
+
+<body id="body">
+
+  <div class="container">
+    <main>
+      <div class="main__container">
+
+        <!-- MAIN TITLE STARTS HERE -->
+        <div class="main__greeting">
+          <h1>Hi, Welcome to Parasol JS</h1>
+          <br>
+          <p>An open source, interactive visualization library to support the development of web applications for multi-objective decision making.</p>
+          <br>
+          <p>This library is based on D3 V5 API and extends upon parcoords-es.</p>
+        </div>
+        <!-- MAIN TITLE ENDS HERE -->
+
+        <!-- CHARTS STARTS HERE -->
+        <div class="charts">
+
+          <div class="charts__left">
+            <div class="charts__left__title">
+              <div>
+                <h1><a href="linked-plots-1.html">Plots with linked parallel coordinates and SlickGrid functionality</a></h1> <br>
+                <p style="text-align:justify; text-justify:inner-word;">
+                  Parasol based web page to demonstrate Linked plots and SlickGrid along with a slider using
+                  which the transparency of the polylines could be altered. With this, you can display the linked plots
+                  along withvarious functionalities like keeping and removing the brushed data along with displaying SlickGrid.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="charts__right">
+            <div class="charts__right__title">
+              <div>
+                <h1><a href="linked-plots-2.html">Linked Plots with buttons for filtering and exporting data</a></h1> <br>
+                <p style="text-align:justify; text-justify:inner-word;">
+                  Parasol-based web page that demonstrates brushing across linked parallel coordinates plots and
+                  how buttons can be used to modify a Parasol object using the Parasol API.
+                  With this, you can display the linked plots along with different functionalitites like selecting a
+                  part of data from the graph, removing the brushed data, and altering the number of clusters.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <div id="sidebar">
+      <div class="sidebar__title">
+        <div class="sidebar__img">
+          <img src="parasol-icon.png" alt="logo" />
+          <h1 style="margin-left: 40px;"> Parasol JS</h1>
+        </div>
+      </div>
+
+      <div class="sidebar__menu">
+        
+        <div class="sidebar__link active_menu_link">
+          <i class="fa fa-home"></i>
+          <a href="index.html">Dashboard</a>
+        </div>
+
+        <div class="sidebar__link">
+          <i class="fa fa-calendar-check-o"></i>
+          <a href="linked-plots-1.html">Linked Plots - 1</a>
+        </div>
+
+        <div class="sidebar__link">
+          <i class="fa fa-calendar-check-o"></i>
+          <a href="linked-plots-2.html">Linked Plots - 2 </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</body>
+
+</html>

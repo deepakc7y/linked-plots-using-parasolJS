@@ -1,0 +1,168 @@
+<html>
+
+<head>
+  <title>Linked Plots - 1</title>
+  <link rel="icon" href="umbrella-favicon.png" />
+  <link rel="stylesheet" type="text/css" href="parasol.css" />
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
+</head>
+
+<body id="body" style="
+      margin-top: 0px;
+      margin-left: 0px;
+      margin-right: 0px;
+      margin-bottom: 0px;
+    ">
+  <div class="container">
+    <main>
+      <div class="main__container">
+        <h1 style="text-align: center">
+          Plots with linked parallel coordinates and SlickGrid functionality
+        </h1>
+        <br />
+
+        <form method="get" action="#" name="myForm" onsubmit="return false;">
+          Number of Clusters:
+          <input type="number" min="0" id="nok" value="3" />
+          <input type="file" multiple="false" id="csvFile" accept=".csv" style="margin-left: 100px" required />
+          <br />
+          <button class="button" onclick="visualizeCSV()" style="margin-left: 368px; margin-top: 20px">
+            Visualize
+          </button>
+        </form>
+        <div id="showcontent" style="display: none;">
+          <button class="button" id="reset_brushes">Reset Brushes</button>
+          <button class="button" id="keep_brushed">Keep Brushed Data</button>
+          <button class="button" id="remove_brushed">
+            Remove Brushed Data
+          </button>
+
+          <h4 style="margin-top: 15px; margin-bottom: 10px">
+            Adjust this slider to alter the transparency of the polylines for
+            the first plot.
+          </h4>
+          <input type="range" min="0" max="100" value="10" id="alpha" style="margin-bottom: 15px" />
+
+          <div id="plot0" class="parcoords" style="
+                height: 200px;
+                width: 800px;
+                position: relative;
+                display: block;
+              "></div>
+          <div id="plot1" class="parcoords" style="
+                height: 200px;
+                width: 800px;
+                position: relative;
+                display: block;
+              "></div>
+          <div id="grid" class="slickgrid-container" style="height: 500px; width: 100%; position: relative"></div>
+        </div>
+      </div>
+    </main>
+
+    <div id="sidebar">
+      <div class="sidebar__title">
+        <div class="sidebar__img">
+          <img src="parasol-icon.png" alt="logo" />
+          <h1 style="margin-left: 40px">Parasol JS</h1>
+        </div>
+      </div>
+
+      <div class="sidebar__menu">
+        <div class="sidebar__link">
+          <i class="fa fa-home"></i>
+          <a href="index.html">Dashboard</a>
+        </div>
+
+        <div class="sidebar__link active_menu_link">
+          <i class="fa fa-calendar-check-o"></i>
+          <a href="linked-plots-1.html">Linked Plots - 1</a>
+        </div>
+
+        <div class="sidebar__link">
+          <i class="fa fa-calendar-check-o"></i>
+          <a href="linked-plots-2.html">Linked Plots - 2 </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  async function visualizeCSV() {
+    var fileInput = document.getElementById("csvFile");
+    var filePath = fileInput.value;
+    var nok = parseInt(document.getElementById("nok").value);
+    var allowedExtensions = /(\.csv)$/i;
+
+    if (!allowedExtensions.exec(filePath)) {
+      alert("Invalid file type\nUpload only csv file");
+      fileInput.value = "";
+      return false;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function () {
+      var data = d3.csvParse(reader.result);
+      tutorial3(data, nok);
+    };
+    reader.readAsText(fileInput.files[0]);
+  }
+</script>
+
+<!-- Create interactive plots and table -->
+<script>
+  function visualize(data, nok) {
+    document.getElementById("showcontent").style.display="inline";
+    document.getElementById("plot0").innerHTML = "";
+    document.getElementById("plot1").innerHTML = "";
+    document.getElementById("grid").innerHTML = "";
+    var cluster_vars = d3.keys(data[0]).filter(function (key) {
+      return key !== "name";
+    });
+    var ps = Parasol(data)(".parcoords") // create Parasol object
+      .attachGrid({
+        container: "#grid",
+      }) // attach data table
+      .linked() // link PC plots and data table together
+      .cluster({
+        k: nok,
+        vars: cluster_vars,
+        hidden: false,
+      }) // BUG: can't interact with clustering axis
+      .reorderable(); // dynamically reorderable axes
+
+    ps.charts[0].alpha(0.1); // adjust the opacity of the first plot
+
+    // 1. Button: reset brushes
+    d3.select("#reset_brushes").on("click", function () {
+      ps.resetSelections("brushed");
+    });
+
+    // 2a. Button: keep brushed data
+    d3.select("#keep_brushed").on("click", function () {
+      ps.keepData("brushed");
+    });
+
+    // 2b. Button: remove brushed data
+    d3.select("#remove_brushed").on("click", function () {
+      ps.removeData("brushed");
+    });
+
+    // 3. Slider: adjust alpha (opacity)
+    d3.select("#alpha").on("change", function () {
+      ps.charts[0].alpha(this.value / 100).render(); // update slider value
+    });
+  }
+
+  function tutorial3(data, nok) {
+    visualize(data, nok);
+  }
+</script>
+<script src="./app.js"></script>
+<script src="./lib/d3.v5.min.js"></script>
+<script src="./dist/parasol.standalone.js"></script>
+
+</html>

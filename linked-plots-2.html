@@ -1,0 +1,185 @@
+<html>
+
+<head>
+  <title>Linked Plots - 2</title>
+  <link rel="icon" href="umbrella-favicon.png">
+  <link rel="stylesheet" type="text/css" href="parasol.css">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
+</head>
+
+<body id="body" style=" margin-top: 0px; margin-left: 0px; margin-right: 0px; margin-bottom: 0px;">
+
+  <div class="container">
+    <main>
+
+      <div class="main__container">
+        <h1 style="text-align: center"> Linked Plots with buttons for filtering and exporting data</h1>
+        <div class="main__greeting">
+           <br>
+
+          <form method="get" action="#" name="myForm" onsubmit="return false">
+            Number of Clusters: <input type="number" min="0" id="nok" value="3" required>
+            <input type="file" multiple="false" id="csvFile" accept=".csv" style="margin-left:100px;" required>
+            <input type="text" id="txtColumn" placeholder="Column to visualize" required> <br>
+            <button class="button" onclick="visualizeCSV()" style="margin-left: 368px;margin-top:20px;">Visualize</button>
+          </form>
+
+          <div id="showcontent" style="display: none;">
+          <span id="txtCol"></span>
+
+          <svg height="20" width="400" style="display:block;">
+            <defs>
+              <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color: rgb(104, 245, 165); stop-opacity: 1" />
+                <stop offset="100%" style="stop-color: rgb(12, 138, 67); stop-opacity: 1" />
+              </linearGradient>
+            </defs>
+            <rect height="20" width="400" fill="url(#grad1)" />
+          </svg>
+
+          <br>
+
+          <button class="button" style="margin-left:0px; margin-bottom:10px;" id="reset_brushes">Reset Brushes</button>
+          <button class="button" style="margin-left:0px; margin-bottom:10px;" id="keep_brushed">Keep Brushed Data</button>
+          <button class="button" style="margin-left:0px; margin-bottom:10px;" id="remove_brushed">Remove Brushed Data</button>
+          <button class="button" style="margin-left:0px; margin-bottom:10px;" id="export_brushed">Export Brushed Data</button>
+
+          <div id="p0" class="parcoords" style="height: 200px; width: 800px;position: relative;display: block;"></div>
+          <div id="p1" class="parcoords" style="height: 200px; width: 800px;position: relative;display: block;"></div>
+
+        </div>
+      </div>
+      </div>
+      
+    </main>
+
+    <div id="sidebar">
+
+      <div class="sidebar__title">
+        <div class="sidebar__img">
+          <img src="parasol-icon.png" alt="logo" />
+          <h1 style="margin-left: 40px;"> Parasol JS</h1>
+        </div>
+      </div>
+
+      <div class="sidebar__menu">
+        <div class="sidebar__link ">
+          <i class="fa fa-home"></i>
+          <a href="index.html">Dashboard</a>
+        </div>
+
+        <div class="sidebar__link">
+          <i class="fa fa-calendar-check-o"></i>
+          <a href="linked-plots-1.html">Linked Plots - 1</a>
+        </div>
+
+        <div class="sidebar__link active_menu_link">
+          <i class="fa fa-calendar-check-o "></i>
+          <a href="linked-plots-2.html">Linked Plots - 2 </a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  </div>
+</body>
+
+
+
+<script>
+  function visualizeCSV() {
+    var fileInput = document.getElementById("csvFile");
+    var filePath = fileInput.value;
+    var nok = parseInt(document.getElementById("nok").value);
+    var col = document.getElementById("txtColumn").value;
+    var allowedExtensions = /(\.csv)$/i;
+
+    if (!allowedExtensions.exec(filePath)) {
+      alert("Invalid file type\nUpload only csv file");
+      fileInput.value = "";
+      return false;
+    }
+    var reader = new FileReader();
+    reader.onload = function() {
+      var data = d3.csvParse(reader.result);
+      example1(data, nok);
+    };
+    reader.readAsText(fileInput.files[0]);
+  }
+</script>
+
+
+<script>
+  function example1(data, nok, column) {
+    document.getElementById("showcontent").style.display="inline";
+    document.getElementById("p0").innerHTML = "";
+    document.getElementById("p1").innerHTML = "";
+    document.getElementById("txtCol").innerText = "";
+    var min = 1000;
+    var max = 0;
+    var arr = [];
+    var layout = {};
+
+    var col = document.getElementById("txtColumn").value;
+    if (typeof data[0][col] == "undefined") {
+      alert('No such column in csv file!');
+      return;
+    }
+    for (var key in data) {
+      var value = data[key][col];
+      if (typeof value !== "undefined" && isNaN(value) == false) {
+        arr.push(parseFloat(value));
+      } else if (isNaN(value)) {
+        //alert('Column should be numbers only');
+        //return;
+      }
+    }
+    arr.sort(function(a, b) {
+      return a - b;
+    });
+    min = arr[0];
+    max = arr[arr.length - 1];
+    document.getElementById("txtCol").innerText =
+      col + ":" + min + " to " + max;
+
+    // initialize chart closures
+    var ps = Parasol(data)(".parcoords");
+    var green_gradient = d3
+      .scaleLinear()
+      .domain([min, max])
+      .range([d3.rgb(104, 245, 165), d3.rgb(12, 138, 67)])
+      .interpolate(d3.interpolateLab);
+
+
+    // apply Parasol API
+    ps.linked()
+      .setAxesLayout(layout)
+      .alpha(0.5)
+      .reorderable()
+      .color(function(data) {
+        return green_gradient(data[col]);
+      }) // quantitative color scale
+      .render();
+
+    // activate buttons
+    d3.select("#reset_brushes").on("click", function() {
+      ps.resetSelections("brushed");
+    });
+    d3.select("#keep_brushed").on("click", function() {
+      ps.keepData("brushed");
+    });
+    d3.select("#remove_brushed").on("click", function() {
+      ps.removeData("brushed");
+    });
+    d3.select("#export_brushed").on("click", function() {
+      ps.exportData("brushed"); // will export as 'parasol_data.csv' as default
+    });
+  }
+</script>
+
+<script src="./lib/d3.v5.min.js"></script>
+<script src="./dist/parasol.standalone.js"></script>
+
+</html>
