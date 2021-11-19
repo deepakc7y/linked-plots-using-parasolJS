@@ -10,4 +10,4 @@ Few Images of the Web Application are as follows:
 
 <img src="https://github.com/deepkchoudhary/linked-plots-using-parasolJS/blob/main/Linked%20Plots%20-%201.png">
 
-<img src="https://github.com/deepkchoudhary/linked-plots-using-parasolJS/blob/main/Linked%20Plots%20-%202.png" width="500">
+<img src="https://github.com/deepkchoudhary/linked-plots-using-parasolJS/blob/main/Linked%20Plots%20-%202.png">
